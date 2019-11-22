@@ -27,12 +27,12 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @Transactional
 class JdbcOfficerDaoTest {
     @Autowired
-    private OfficerDao officerDao;
+    private OfficerDao jdbcOfficerDao;
 
     @Test
     void save() {
         Officer officer = new Officer(Rank.ENSIGN, "Pavel", "Chekov");
-        officer = officerDao.save(officer);
+        officer = jdbcOfficerDao.save(officer);
         log.info("officer={}", officer);
         assertNotNull(officer.getId());
     }
@@ -40,14 +40,14 @@ class JdbcOfficerDaoTest {
     @Test
     void existsById() {
         IntStream.rangeClosed(1, 5)
-                 .forEach(id -> assertTrue(officerDao.existsById(id)));
+                 .forEach(id -> assertTrue(jdbcOfficerDao.existsById(id)));
     }
 
     @Test
     void findAll() {
-        List<String> lastNames = officerDao.findAll().stream()
-                                           .map(Officer::getLast)
-                                           .collect(Collectors.toList());
+        List<String> lastNames = jdbcOfficerDao.findAll().stream()
+                                               .map(Officer::getLast)
+                                               .collect(Collectors.toList());
         MatcherAssert.assertThat(lastNames, containsInAnyOrder("Kirk",
                                                                "Picard",
                                                                "Sisko",
@@ -57,19 +57,19 @@ class JdbcOfficerDaoTest {
 
     @Test
     void count() {
-        assertEquals(5, officerDao.count());
+        assertEquals(5, jdbcOfficerDao.count());
     }
 
     @Test
     void findByIdThatDoesNotExist() {
-        Optional<Officer> officer = officerDao.findById(999);
+        Optional<Officer> officer = jdbcOfficerDao.findById(999);
         assertFalse(officer.isPresent());
     }
 
     @Test
     void findById() {
         Officer expectedOfficer = new Officer(1, Rank.CAPTAIN, "James", "Kirk");
-        Optional<Officer> officer = officerDao.findById(1);
+        Optional<Officer> officer = jdbcOfficerDao.findById(1);
         assertTrue(officer.isPresent());
         assertEquals(expectedOfficer, officer.get());
     }
@@ -78,10 +78,10 @@ class JdbcOfficerDaoTest {
     void delete() {
         IntStream.rangeClosed(1, 5)
                  .forEach(id -> {
-                     Optional<Officer> officer = officerDao.findById(id);
+                     Optional<Officer> officer = jdbcOfficerDao.findById(id);
                      assertTrue(officer.isPresent());
-                     officerDao.delete(officer.get());
+                     jdbcOfficerDao.delete(officer.get());
                  });
-        assertEquals(0, officerDao.count());
+        assertEquals(0, jdbcOfficerDao.count());
     }
 }
