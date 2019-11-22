@@ -51,11 +51,15 @@ public class JdbcOfficerDao implements OfficerDao {
 
     @Override
     public Optional<Officer> findById(Integer id) {
-        String sql = String.format("SELECT * FROM %s WHERE %s=?", OFFICERS_TABLE_NAME,
-                                   KEY_COLUMN_NAME);
-        Officer officer = jdbcTemplate.queryForObject(sql, officerRowMapper, id
-        );
-        return Optional.ofNullable(officer);
+        Optional<Officer> officer;
+        if (this.existsById(id)) {
+            String sql = String.format("SELECT * FROM %s WHERE %s=?", OFFICERS_TABLE_NAME,
+                                       KEY_COLUMN_NAME);
+            officer = Optional.ofNullable(jdbcTemplate.queryForObject(sql, officerRowMapper, id));
+        } else {
+            officer = Optional.empty();
+        }
+        return officer;
     }
 
     @Override
@@ -80,7 +84,7 @@ public class JdbcOfficerDao implements OfficerDao {
 
     @Override
     public boolean existsById(Integer id) {
-        String sql = String.format("SELECT EXISTS (SELECT 1 FROM %s WHERE %s=?",
+        String sql = String.format("SELECT EXISTS (SELECT 1 FROM %s WHERE %s=?)",
                                    OFFICERS_TABLE_NAME, KEY_COLUMN_NAME);
         Boolean result = jdbcTemplate.queryForObject(sql, Boolean.class, id);
         return Objects.requireNonNullElse(result, false);
