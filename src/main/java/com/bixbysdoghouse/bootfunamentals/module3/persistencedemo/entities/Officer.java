@@ -17,6 +17,7 @@ import lombok.NonNull;
 @Table(name = "officers")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Officer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
